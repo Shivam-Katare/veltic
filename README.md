@@ -4,7 +4,9 @@ A modern, dark-themed analytics dashboard starter kit built with React, TypeScri
 
 ![image](https://github.com/user-attachments/assets/3ac2f5d3-50e6-4e27-8752-39048f79e7cf)
 
-[Live Demo](https://veltic.vercel.app/)
+
+https://github.com/user-attachments/assets/441ff997-ceab-435b-8a22-c85aa2a275b5
+
 
 ## Features
 
