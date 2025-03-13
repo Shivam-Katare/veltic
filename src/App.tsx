@@ -72,7 +72,7 @@ function App() {
   return (
     <AuthProvider>
       <Suspense fallback={<p>Loading...</p>}>
-      <VeltProvider apiKey={process.env.VITE_VELT_API_KEY}>
+      <VeltProvider apiKey={import.meta.env.VITE_VELT_API_KEY}>
           <VeltComments popoverMode={true} popoverTriangleComponent={true} />
           <Toaster position="top-right" richColors />
           <AppRoutes />
