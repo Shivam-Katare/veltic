@@ -2,7 +2,9 @@
 
 A modern, dark-themed analytics dashboard starter kit built with React, TypeScript, Tailwind CSS, Supabase, and Velt collaboration features.
 
-![Tempo + Velt Starter Kit](https://via.placeholder.com/1200x600/1a1a2e/FFFFFF?text=Tempo+%2B+Velt+Starter+Kit)
+![image](https://github.com/user-attachments/assets/3ac2f5d3-50e6-4e27-8752-39048f79e7cf)
+
+[Live Demo](https://veltic.vercel.app/)
 
 ## Features
 
