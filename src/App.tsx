@@ -5,9 +5,13 @@ import LoginForm from "./components/auth/LoginForm";
 import SignUpForm from "./components/auth/SignUpForm";
 import Dashboard from "./components/pages/dashboard";
 import AnalyticsDashboard from "./components/pages/analytics-dashboard";
+import Plans from "./components/pages/plans";
 import Success from "./components/pages/success";
 import Home from "./components/pages/home";
-import { AuthProvider, useAuth } from "../supabase/auth";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { VeltComments, VeltCursor, VeltProvider } from "@veltdev/react";
+import VeltAuth from "./components/velt/VeltAuth";
+import { Toaster } from "sonner";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -34,6 +38,7 @@ function AppRoutes() {
           path="/dashboard"
           element={
             <PrivateRoute>
+              <VeltAuth />
               <Dashboard />
             </PrivateRoute>
           }
@@ -42,7 +47,17 @@ function AppRoutes() {
           path="/analytics"
           element={
             <PrivateRoute>
+              <VeltAuth />
               <AnalyticsDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/plans"
+          element={
+            <PrivateRoute>
+              <VeltAuth />
+              <Plans />
             </PrivateRoute>
           }
         />
@@ -57,7 +72,11 @@ function App() {
   return (
     <AuthProvider>
       <Suspense fallback={<p>Loading...</p>}>
-        <AppRoutes />
+      <VeltProvider apiKey={process.env.VITE_VELT_API_KEY}>
+          <VeltComments popoverMode={true} popoverTriangleComponent={true} />
+          <Toaster position="top-right" richColors />
+          <AppRoutes />
+        </VeltProvider>
       </Suspense>
     </AuthProvider>
   );

@@ -1,33 +1,40 @@
-import React from "react";
+import { DOCUMENTID } from "@/lib/constant";
 import TopNavigation from "../dashboard/layout/TopNavigation";
-import Sidebar from "../dashboard/layout/Sidebar";
-import DashboardGrid from "../dashboard/DashboardGrid";
-import TaskBoard from "../dashboard/TaskBoard";
-import ActivityFeed from "../dashboard/ActivityFeed";
+import AnalyticsDashboard from "./analytics-dashboard";
+import { 
+  useSetDocument, 
+  VeltPresence, 
+  VeltCursor, 
+  VeltComments, 
+  VeltCommentsSidebar,
+  VeltCommentTool
+} from "@veltdev/react";
 
 const Dashboard = () => {
+  const documentId = DOCUMENTID;
+  useSetDocument(documentId, {
+    documentName: "Dashboard",
+    lastUpdated: new Date().toISOString(),
+  });
+
   return (
-    <div className="min-h-screen bg-white">
-      <TopNavigation />
-      
-      <div className="flex pt-16">
-        <Sidebar />
-        
-        <main className="flex-1 overflow-auto p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
-            <p className="text-gray-600">Manage your projects and tasks efficiently.</p>
-          </div>
+    <div className="min-h-screen bg-white flex">
+      <TopNavigation />      
+      <div className="flex-1 flex flex-col">
+        <div className="p-4 flex-1">
+          {/* Enable Velt features */}
+          <VeltPresence />
+          <VeltCursor />
           
-          <div className="space-y-8">
-            <DashboardGrid />
-            <TaskBoard />
-          </div>
-        </main>
-        
-        <div className="w-[280px] border-l border-gray-200 bg-white">
-          <div className="p-4">
-            <ActivityFeed />
+          {/* Main dashboard content */}
+          <AnalyticsDashboard />
+          
+          {/* Comments Sidebar */}
+          <VeltCommentsSidebar />
+          
+          {/* Comment Tool Button */}
+          <div className="fixed bottom-4 right-4">
+            <VeltCommentTool />
           </div>
         </div>
       </div>

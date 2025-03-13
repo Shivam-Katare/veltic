@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@13.6.0?target=deno";
 
@@ -30,7 +31,6 @@ serve(async (req) => {
             }
         );
     } catch (error) {
-        console.error("Error getting products:", error);
         return new Response(
             JSON.stringify({ error: error.message }),
             { 
