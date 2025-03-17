@@ -33,18 +33,36 @@ const AnalyticsDashboard = () => {
       if (user) {
         try {
           setIsLoading(true);
+          // First, get the user's user_id from the users table
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('user_id')
+            .eq('id', user.id)
+            .single();
+            
+          if (userError) {
+            console.error('Error fetching user data:', userError);
+            return;
+          }
+          
+          if (!userData?.user_id) {
+            console.error('User not found or user_id is missing');
+            return;
+          }
+          
+
           // Query the subscriptions table to check if the user has an active subscription
           const { data, error } = await supabase
             .from('subscriptions')
             .select('*')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single();
+            .eq('user_id', userData.user_id)
+            .eq('status', 'active');
 
-          if (error) {
-          } else if (data) {
-            setIsPremium(true);
-          }
+            if (error) {
+              console.error('Error fetching subscription:', error);
+            } else if (data && data.length > 0) {
+              setIsPremium(true);
+            }
         } catch (error) {
           console.error('Error:', error);
         } finally {
@@ -115,10 +133,6 @@ const AnalyticsDashboard = () => {
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="activity" className="data-[state=active]:bg-indigo-600">
-                <Activity className="h-4 w-4 mr-2" />
-                Activity
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -130,39 +144,6 @@ const AnalyticsDashboard = () => {
               </div>
 
               
-            </TabsContent>
-
-            <TabsContent value="activity" className="space-y-6">
-              <Card className="bg-gray-900 border-gray-800">
-                <CardHeader>
-                  <CardTitle className="text-white">User Activity</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Monitor user engagement and activity patterns
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-min-screen bg-gray-800 rounded-md p-4">
-                    <div className="space-y-4">
-                      {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="flex items-center justify-between p-3 bg-gray-850 rounded-md border border-gray-700">
-                          <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
-                              {String.fromCharCode(64 + item)}
-                            </div>
-                            <div className="ml-3">
-                              <p className="text-white">User Activity {item}</p>
-                              <p className="text-gray-400 text-sm">{new Date().toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                          <Badge variant="outline" className="text-indigo-400 border-indigo-400">
-                            {Math.floor(Math.random() * 100)}%
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
           </Tabs>
           
