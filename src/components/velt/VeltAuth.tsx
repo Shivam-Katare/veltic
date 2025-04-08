@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+// [VELT] Auth Component. Used to identify the user in Velt.
+
+import { useEffect } from 'react';
 import { useIdentify } from '@veltdev/react';
 import { useAuth } from '../../context/AuthContext';
 

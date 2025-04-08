@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +19,36 @@ interface DataPoint {
 
 const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
   const navigate = useNavigate();
-  const [timeRange, setTimeRange] = useState("7days");
   const [dataType, setDataType] = useState("views");
   const [data, setData] = useState<DataPoint[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
+
+  //resize observer to handle responsive sizing
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        // Maintain aspect ratio while being responsive
+        setDimensions({
+          width: width,
+          height: Math.max(300, width * 0.5) // Minimum height of 300px, otherwise 50% of width
+        });
+      }
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Generate mock data based on filters
   useEffect(() => {
     const generateData = () => {
       const points: DataPoint[] = [];
-      const days = timeRange === "7days" ? 7 : timeRange === "14days" ? 14 : 30;
+      const days = 7;
       const maxValue = dataType === "views" ? 1000 : dataType === "users" ? 500 : 100;
       
       for (let i = 0; i < days; i++) {
@@ -43,26 +64,29 @@ const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
     };
 
     setData(generateData());
-  }, [timeRange, dataType]);
+  }, [dataType]); // Removed timeRange and isPremium from dependencies since we only use 7 days now
 
   // Calculate SVG dimensions and scales
   const margin = { top: 20, right: 30, bottom: 40, left: 60 };
-  const width = 800;
-  const height = 400;
+  const width = dimensions.width;
+  const height = dimensions.height;
   const graphWidth = width - margin.left - margin.right;
   const graphHeight = height - margin.top - margin.bottom;
 
+  // Get the maximum Y value, with a fallback to 1 to avoid division by zero
   const maxY = data.length > 0 ? Math.max(...data.map(d => d.y), 1) : 1;
 
   const xScale = (x: number) => (x * graphWidth / (Math.max(data.length - 1, 1))) + margin.left;
-    const yScale = (y: number) => {
+  
+  const yScale = (y: number) => {
+    // Ensure we don't divide by zero and handle empty data
     return height - margin.bottom - ((y / maxY) * graphHeight);
   };
 
   // Generate line path
   const linePath = data.length > 0 
-  ? data.map((point, i) => `${i === 0 ? 'M' : 'L'} ${xScale(point.x)} ${yScale(point.y)}`).join(' ')
-  : '';
+    ? data.map((point, i) => `${i === 0 ? 'M' : 'L'} ${xScale(point.x)} ${yScale(point.y)}`).join(' ')
+    : '';
 
   const handleUpgradeClick = () => {
     navigate("/plans");
@@ -119,19 +143,26 @@ const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
             </Badge>
           </CardTitle>
           
-          {isPremium && (
+          {isPremium ? (
             <div className="flex gap-4">
-              <Select value={timeRange} onValueChange={setTimeRange}>
+              <Select value={dataType} onValueChange={setDataType}>
                 <SelectTrigger className="w-32 bg-gray-800 border-gray-700 text-gray-200">
-                  <SelectValue placeholder="Time Range" />
+                  <SelectValue placeholder="Data Type" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="7days">7 Days</SelectItem>
-                  <SelectItem value="14days">14 Days</SelectItem>
-                  <SelectItem value="30days">30 Days</SelectItem>
+                <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
+                  <SelectItem value="views">Page Views</SelectItem>
+                  <SelectItem value="users">Active Users</SelectItem>
+                  <SelectItem value="conversions">Conversions</SelectItem>
                 </SelectContent>
               </Select>
-              
+              <div className="flex items-center">
+                <Badge className="bg-gray-800 text-gray-400 border border-gray-700">
+                  Last 7 Days
+                </Badge>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-4">
               <Select value={dataType} onValueChange={setDataType}>
                 <SelectTrigger className="w-32 bg-gray-800 border-gray-700 text-gray-200">
                   <SelectValue placeholder="Data Type" />
@@ -142,14 +173,19 @@ const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
                   <SelectItem value="conversions">Conversions</SelectItem>
                 </SelectContent>
               </Select>
+              <div className="flex items-center">
+                <Badge className="bg-gray-800 text-gray-400 border border-gray-700">
+                  Last 7 Days
+                </Badge>
+              </div>
             </div>
           )}
         </div>
       </CardHeader>
 
       <CardContent className="pt-6">
-        <div className="relative">
-          <svg width={width} height={height} className={`${!isPremium ? 'blur-sm' : ''}`}>
+        <div className="relative w-full" ref={containerRef}>
+          <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" className={`${!isPremium ? 'blur-sm' : ''}`}>
             {/* Y-axis */}
             <line
               x1={margin.left}
@@ -189,7 +225,7 @@ const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
             {data.length > 0 && (
               <AnimatePresence>
                 <motion.path
-                  key={`${timeRange}-${dataType}`}
+                  key={dataType}
                   d={linePath}
                   fill="none"
                   stroke="url(#gradient)"
@@ -212,7 +248,7 @@ const DataVisualizations = ({ isPremium = false }: DataVisualizationsProps) => {
             {/* Data points */}
             {data.map((point, i) => (
               <motion.circle
-                key={`${timeRange}-${dataType}-${i}`}
+                key={`${dataType}-${i}`}
                 cx={xScale(point.x)}
                 cy={yScale(point.y)}
                 r="4"
