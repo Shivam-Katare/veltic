@@ -127,7 +127,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
       <Header user={user} signOut={signOut} />
       
-      <main>
+      <main className="w-full">
         <HeroSection />
         <FeaturesSection />
         <PricingSection 

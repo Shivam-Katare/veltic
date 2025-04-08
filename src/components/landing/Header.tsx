@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings, User, Zap } from "lucide-react";
+import { Settings, User, Zap, Menu, X } from "lucide-react";
 
 interface HeaderProps {
   user: any;
@@ -18,6 +18,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-gray-800 bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-gray-950/60">
       <div className="container flex h-16 items-center justify-between">
@@ -27,17 +33,33 @@ const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
             className="font-bold text-xl flex items-center text-white"
           >
             <Zap className="h-6 w-6 mr-2 text-blue-400" />
-            Tempo + Velt Starter Kit
+            <span className="hidden md:inline">Tempo + Velt Starter Kit</span>
           </Link>
         </div>
-        <nav className="flex items-center space-x-4">
+
+        {/* Hamburger menu button for mobile */}
+        <div className="md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+            className="text-white hover:bg-gray-800"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </Button>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-4">
           {user ? (
             <div className="flex items-center gap-4">
               <Link to="/dashboard">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-black"
-                >
+                <Button variant="ghost" className="text-white hover:text-black">
                   Dashboard
                 </Button>
               </Link>
@@ -56,9 +78,7 @@ const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
                         {user.email?.[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden md:inline-block">
-                      {user.email}
-                    </span>
+                    <span className="hidden md:inline-block">{user.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -90,10 +110,7 @@ const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
           ) : (
             <>
               <Link to="/login">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-black"
-                >
+                <Button variant="ghost" className="text-white hover:text-black">
                   Sign In
                 </Button>
               </Link>
@@ -106,8 +123,83 @@ const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
           )}
         </nav>
       </div>
+
+      {/* Mobile menu dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-gray-900 border-t border-gray-800">
+          <div className="container py-4 space-y-3">
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                      alt={user.email || ""}
+                    />
+                    <AvatarFallback>
+                      {user.email?.[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-white">{user.email}</span>
+                </div>
+                <Link
+                  to="/dashboard"
+                  className="block px-3 py-2 text-white hover:bg-gray-800 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/profile"
+                  className="block px-3 py-2 text-white hover:bg-gray-800 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </div>
+                </Link>
+                <Link
+                  to="/settings"
+                  className="block px-3 py-2 text-white hover:bg-gray-800 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </div>
+                </Link>
+                <button
+                  onClick={() => {
+                    signOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-white hover:bg-gray-800 rounded-md"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="block px-3 py-2 text-white hover:bg-gray-800 rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="bg-blue-600 text-white hover:bg-blue-700 w-full">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
 
-export default Header; 
+export default Header;
