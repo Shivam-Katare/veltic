@@ -75,7 +75,7 @@ function App() {
         {/* [VELT] Provider Component. Used to provide the Velt context to the app. */}
       <VeltProvider apiKey={import.meta.env.VITE_VELT_API_KEY}>
         {/* [VELT] Comments Component. Used to display the comments sidebar. */}
-        <VeltComments popoverMode={true} popoverTriangleComponent={true} />
+        <VeltComments popoverMode={true} popoverTriangleComponent={true} commentPinHighlighter={false} textMode={false} />
         <Toaster position="top-right" richColors />
         <AppRoutes />
         </VeltProvider>
