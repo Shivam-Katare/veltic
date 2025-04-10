@@ -1,12 +1,12 @@
 // [VELT] Auth Component. Used to identify the user in Velt.
 
 import { useEffect } from 'react';
-import { useIdentify } from '@veltdev/react';
+import { useIdentify, useVeltClient } from '@veltdev/react';
 import { useAuth } from '../../context/AuthContext';
 
 const VeltAuth = () => {
   const { user } = useAuth(); // Get the authenticated user from your Supabase auth context
-  
+  const {client} = useVeltClient();
   // Create a random color for the user if not provided
   const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -34,6 +34,10 @@ const VeltAuth = () => {
   useEffect(() => {
     if (user && veltUser) {
       console.log('User authenticated with Velt:', veltUser.name);
+    }
+
+    if (client) {
+      client.setDarkMode(true);
     }
   }, [user, veltUser]);
 

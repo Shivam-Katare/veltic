@@ -47,9 +47,9 @@ const Header: React.FC<HeaderProps> = ({ user, signOut }) => {
             className="text-white hover:bg-gray-800"
           >
             {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 text-white" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6 text-white" />
             )}
           </Button>
         </div>

@@ -48,7 +48,7 @@ const TopNavigation = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-2 bg-white text-foreground">
+              <Button variant="ghost" className="gap-2 bg-gray-900 text-white hover:bg-gray-800 hover:text-white">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
@@ -59,23 +59,23 @@ const TopNavigation = () => {
                 <span className="text-sm">{user.email}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 bg-gray-900 text-white hover:bg-gray-800 hover:text-white">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="py-2">
+              <DropdownMenuItem asChild className="py-2 hover:bg-gray-800 hover:text-white">
                 <Link to="/plans">
                   <CreditCard className="mr-2 h-4 w-4" />
                   Plans
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 w-full text-left" asChild>
+              <DropdownMenuItem className="py-2 w-full text-left hover:bg-gray-800 hover:text-white" asChild>
                 <Link to="/dashboard">
                   <Home className="mr-2 h-4 w-4" />
                   Dashboard
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => signOut()} className="py-2">
+              <DropdownMenuItem onSelect={() => signOut()} className="py-2 hover:bg-gray-800 hover:text-white">
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
